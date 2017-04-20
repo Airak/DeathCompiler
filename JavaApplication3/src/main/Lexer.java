@@ -118,7 +118,7 @@ public class Lexer {
             do{
                 sb.append(ch);
                 readch();
-            }while(Character.isLetterOrDigit(ch));
+            }while(Character.isLetterOrDigit(ch) || Character.isDigit(ch) || ch == '_');
             
             String s = sb.toString();
             Word w = (Word)words.get(s);
@@ -129,6 +129,9 @@ public class Lexer {
             words.put(s, w);
             return w;
         }
+        
+        
+        
         //Caracteres não especificados
         Token t = new Token(ch);
         ch = ' ';

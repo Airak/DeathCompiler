@@ -11,6 +11,7 @@ package main;
  */
 public class Tag {
     public final static int
+            
             //Palavras reservadas
             INIT = 257,
             STOP = 258,
@@ -31,11 +32,13 @@ public class Tag {
             TRUE = 273,
             FALSE = 274,
             INT = 275,
+            
             //Operadores
             EQ=290,
             GE=291,
             LE=292,
-            NE=293,            
+            NE=293,
+            
             //Outros tokens
             NUM = 300,
             ID = 301;   
