@@ -30,6 +30,7 @@ public class Tag {
             AND = 272,
             TRUE = 273,
             FALSE = 274,
+            INT = 275,
             //Operadores
             EQ=290,
             GE=291,
