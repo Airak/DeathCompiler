@@ -70,15 +70,44 @@ public class Lexer {
     }
     
     private void error() {
-        System.err.println("\nErro na linha "+ line +": Token nÃ£o reconhecido! Caractere identificado como problema: "+ch);
-        System.exit(-1);
+        System.err.println("\nErro na linha "+ line +": Token não reconhecido - caractere com provável erro: "+ch);
+        System.exit(0);
+    }
+    
+    private void error(String msg) {
+        System.err.println(msg);
+        System.exit(0);
     }
     
     public Token scan() throws IOException{
         
-        //Desconsidera delimitadores na entrada
+        //Desconsidera delimitadores e comentários na entrada
         for (;; readch()) {
-            if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b') continue;
+            //Comentários
+            if(ch == '/'){//Uma linha
+                if (readch('/')){
+                    for (;; readch()) {
+                        if (ch=='\n') {
+                            line++;
+                            break;
+                        }
+                    } 
+                }
+                else return Word.DIV;//Divisão
+            }
+            else if(ch=='{'){//Várias linhas
+                for (;; readch()) {
+                    if (ch!='}'){
+                        if(ch=='\n') line++;
+                    }
+                    else{
+                        ch = ' ';
+                        break;
+                    }                        
+                }
+            }
+            //Delimitadores
+            else if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b') continue;
             else if (ch == '\n') line++; //conta linhas
             else break;        
         }
@@ -86,68 +115,42 @@ public class Lexer {
         switch(ch){
             //Operadores relacionais
             case '=':
-                readch();
+                ch = ' ';
                 return Word.EQ;
             case '<':
                 if (readch('=')) return Word.LE;
                 else if (readch('>')) return Word.NE;
-                else{
-                    readch();
-                    return Word.LS;
-                }
+                else return Word.LS;
             case '>':
                 if (readch('=')) return Word.GE;
-                else{
-                    readch();
-                    return Word.GR;
-                }
+                else return Word.GR;
             //Operadores aritméticos
             case '+':
-                readch();
+                ch = ' ';
                 return Word.SUM;
             case '-':
-                readch();
+                ch = ' ';
                 return Word.MIN;
             case '*':
-                readch();
+                ch = ' ';
                 return Word.MUL;
             //Operador de atribuição
             case ':':
                 if (readch('=')) return Word.ATR;
+                break;
             //Símbolos de pontuação
             case ',':
-                readch();                
+                ch = ' ';
                 return Word.V;
             case ';':
-                readch();
+                ch = ' ';
                 return Word.PV;
             case '(':
-                readch();
+                ch = ' ';
                 return Word.AP;
             case ')':
-                readch();
-                return Word.FP;               
-            //Comentários:
-            case '/'://Uma linha
-                if (readch('/')){
-                    for (;; readch()) {
-                        if (ch!='\n') continue;
-                        else{
-                            line++;
-                            readch();
-                            break;
-                        } 
-                    } 
-                }
-                else return Word.DIV;
-            case '{': //Várias linhas
-                for (;; readch()) {
-                    if (ch!='}'){
-                        if(ch=='\n') line++;
-                        continue;
-                    }
-                    else break;
-                }
+                ch = ' ';
+                return Word.FP; 
         }
         
         //Literais
@@ -189,7 +192,7 @@ public class Lexer {
                 }while(Character.isDigit(ch));
             }else{
                 readch();
-                if (!(ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b' || ch == '\n')){
+                if (Character.isLetterOrDigit(ch)){
                     error();
                     return null;
                 }
@@ -204,7 +207,7 @@ public class Lexer {
             do{
                 sb.append(ch);
                 readch();
-            }while(Character.isLetterOrDigit(ch) || ch == '_');
+            }while(Character.isLetterOrDigit(ch) || Character.isDigit(ch) || ch == '_');
             
             String s = sb.toString();
             Word w = (Word)words.get(s);
@@ -215,9 +218,9 @@ public class Lexer {
             words.put(s, w);
             return w;
         }
-        
+                
         //Caracteres não especificados
-        error();
+        if (!(file.read()==-1)) { error();}
         return null;
     }
 }

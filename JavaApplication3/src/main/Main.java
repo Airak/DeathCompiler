@@ -5,11 +5,7 @@
  */
 package main;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  *
@@ -20,22 +16,22 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args){
-    
-    String caminho = "D:\\Documentos\\Teste.txt";
+    public static void main(String[] args) {
+        
+    //Scanner ler = new Scanner(System.in);
     
     try {
-        Lexer lex = new Lexer(caminho);
-        String retorno;
-        
-        do{
-            retorno = lex.scan().toString();
-            System.out.println(retorno);
-        }while(retorno!=null);
-        
-    } catch (Exception e) {
-        System.err.println("Erro na leitura do arquivo. " + e.getMessage());
+        String caminho = "D:\\Documentos\\DeathCompiler\\JavaApplication3\\test\\Teste.txt";
+        Lexer lex = new Lexer(caminho); 
+        Token retorno = lex.scan();
+        while (retorno != null){
+            System.out.println(retorno.toString());
+            retorno = lex.scan();
+        }
+    } catch (IOException e) {
+        System.err.println(e.getMessage());
     }
-  }
-    
+
+  }    
+      
 }
