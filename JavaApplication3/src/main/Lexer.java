@@ -19,11 +19,11 @@ public class Lexer {
     private char ch = ' '; //caractere lido do arquivo
     private FileReader file;
     
-    private Hashtable words = new Hashtable();
+    private HashMap words = new HashMap();
     
-    /* Método para inserir palavras reservadas na HashTable*/
+    /* Método para inserir palavras reservadas no HashMap*/
     private void reserve(Word w){
-        words.put(w.getLexeme(), w); // lexema é a chave para entrada na HashTable
+        words.put(w.getLexeme(), w); // lexema é a chave para entrada no HashMap
   
     }
     
@@ -40,7 +40,6 @@ public class Lexer {
             reserve(new Word ("if", Tag.IF));
             reserve(new Word ("begin", Tag.BEGIN));
             reserve(new Word ("end", Tag.END));
-            reserve(new Word ("int", Tag.INT));
             reserve(new Word ("init", Tag.INIT));
             reserve(new Word ("stop", Tag.STOP));
             reserve(new Word ("is", Tag.IS));
@@ -54,8 +53,6 @@ public class Lexer {
             reserve(new Word ("not", Tag.NOT));
             reserve(new Word ("or", Tag.OR));
             reserve(new Word ("and", Tag.AND));
-            reserve(new Word ("true", Tag.TRUE));
-            reserve(new Word ("false", Tag.FALSE));
 
     }
 
@@ -98,22 +95,63 @@ public class Lexer {
             case '>':
                 if (readch('=')) return Word.ge;
                 else return new Token('>');
+            //Comentários:
+            case '/'://Uma linha
+                if (readch('/')){
+                    for (;; readch()) {
+                        if (ch!='\n') continue;
+                        else{
+                            line++;
+                            break;
+                        } 
+                    } 
+                }else return new Token('/');
+            case '{': //Várias linhas
+                for (;; readch()) {
+                    if (ch!='}'){
+                        if(ch=='\n') line++;
+                        continue;
+                    }
+                    else break;
+                }
         }
         
-        //Numeros
+        //Literais
+        if(ch=='"'){
+            StringBuilder sb = new StringBuilder();
+            
+            //Reconhece caracteres da tabela ASCII, exceto '\n' e '"'
+            do{
+                sb.append(ch);
+                readch();
+            }while( ( (int)ch>=0 && (int)ch<=255 ) && ch != '\n' && ch != '"');
+            
+            String s = sb.toString();
+            Word w = (Word)words.get(s);
+            
+            if (w != null) return w; //palavra já existe na HashTable HashTable
+            
+            w = new Word (s, Tag.LITERAL);
+            words.put(s, w);
+            return w;
+            
+        }
+        
+        //Números
         if (Character.isDigit(ch)){
             int value=0;
-            do{
-                value = 10*value + Character.digit(ch,10);
-                readch();
-            }while(Character.isDigit(ch));
-            
+            if(Character.digit(ch,10)!=0){
+                do{
+                    value = 10*value + Character.digit(ch,10);
+                    readch();
+                }while(Character.isDigit(ch));
+            }           
             return new Num(value);
         }
         
         //Identificadores
         if (Character.isLetter(ch)){            
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             
             do{
                 sb.append(ch);
@@ -129,8 +167,6 @@ public class Lexer {
             words.put(s, w);
             return w;
         }
-        
-        
         
         //Caracteres não especificados
         Token t = new Token(ch);

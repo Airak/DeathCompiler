@@ -29,9 +29,6 @@ public class Tag {
             NOT = 270,
             OR = 271,
             AND = 272,
-            TRUE = 273,
-            FALSE = 274,
-            INT = 275,
             
             //Operadores
             EQ=290,
@@ -41,5 +38,6 @@ public class Tag {
             
             //Outros tokens
             NUM = 300,
-            ID = 301;   
+            ID = 301,   
+            LITERAL = 302;
 }
