@@ -7,7 +7,7 @@ package main;
 
 /**
  *
- * @author Matheus
+ * @author Ana Claúdia, Bruno Marques e Matheus Martins
  */
 public class Tag {
     public final static int
@@ -30,14 +30,32 @@ public class Tag {
             OR = 271,
             AND = 272,
             
-            //Operadores
-            EQ=290,
-            GE=291,
-            LE=292,
-            NE=293,
+            //Operadores relacionais
+            EQ=290, //=
+            GE=291, //>=
+            LE=292, //<=
+            NE=293, //<>
+            GR=294, //>
+            LS=295, //<
+            
+            //Operadores aritméticos
+            SUM=296, //+
+            MIN=297, //-
+            MUL=298, //*
+            DIV=299, // /
+            
+            //Operador de atribuição
+            ATR=300, //:=
+            
+            //Símbolos de pontuação
+            PV = 301, //;
+            V = 302, //,
+            AP = 303, //(
+            FP = 304, //)
             
             //Outros tokens
-            NUM = 300,
-            ID = 301,   
-            LITERAL = 302;
+            NUM = 305,
+            ID = 306,
+            LIT = 307;   
 }
+

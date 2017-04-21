@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  *
- * @author Matheus
+ * @author Ana Claúdia, Bruno Marques e Matheus Martins
  */
 
 public class Lexer {
@@ -36,7 +36,7 @@ public class Lexer {
             System.out.println("Arquivo não encontrado");
             throw e;
         }
-        //Insere palavras reservadas na HashTable
+        //Insere palavras reservadas no HashMap
             reserve(new Word ("if", Tag.IF));
             reserve(new Word ("begin", Tag.BEGIN));
             reserve(new Word ("end", Tag.END));
@@ -58,7 +58,7 @@ public class Lexer {
 
         /*Lê o próximo caractere do arquivo*/
     private void readch() throws IOException{
-        ch = (char) file.read();
+        ch = Character.toLowerCase((char) file.read()); // A Linguagem não é case-sensitive!
     }
 
     /* Lê o próximo caractere do arquivo e verifica se é igual a c*/
@@ -67,6 +67,11 @@ public class Lexer {
         if (ch != c) return false;
         ch = ' ';
         return true;
+    }
+    
+    private void error() {
+        System.err.println("\nErro na linha "+ line +": Token nÃ£o reconhecido! Caractere identificado como problema: "+ch);
+        System.exit(-1);
     }
     
     public Token scan() throws IOException{
@@ -79,22 +84,35 @@ public class Lexer {
         }
         
         switch(ch){
-            //Operadores
-            case '&':
-                if (readch('&')) return Word.and;
-                else return new Token('&');
-            case '|':
-                if (readch('|')) return Word.or;
-                else return new Token('|');
+            //Operadores relacionais
             case '=':
-                if (readch('=')) return Word.eq;
-                else return new Token('=');
+                return Word.EQ;
             case '<':
-                if (readch('=')) return Word.le;
-                else return new Token('<');
+                if (readch('=')) return Word.LE;
+                else if (readch('>')) return Word.NE;
+                else return Word.LS;
             case '>':
-                if (readch('=')) return Word.ge;
-                else return new Token('>');
+                if (readch('=')) return Word.GE;
+                else return Word.GR;
+            //Operadores aritméticos
+            case '+':
+                return Word.SUM;
+            case '-':
+                return Word.MIN;
+            case '*':
+                return Word.MUL;
+            //Operador de atribuição
+            case ':':
+                if (readch('=')) return Word.ATR;
+            //Símbolos de pontuação
+            case ',':                
+                return Word.V;
+            case ';':
+                return Word.PV;
+            case '(':
+                return Word.AP;
+            case ')':
+                return Word.FP;               
             //Comentários:
             case '/'://Uma linha
                 if (readch('/')){
@@ -105,7 +123,8 @@ public class Lexer {
                             break;
                         } 
                     } 
-                }else return new Token('/');
+                }
+                else return Word.DIV;
             case '{': //Várias linhas
                 for (;; readch()) {
                     if (ch!='}'){
@@ -129,9 +148,9 @@ public class Lexer {
             String s = sb.toString();
             Word w = (Word)words.get(s);
             
-            if (w != null) return w; //palavra já existe na HashTable HashTable
+            if (w != null) return w; //palavra já existe no HashMap
             
-            w = new Word (s, Tag.LITERAL);
+            w = new Word (s, Tag.LIT);
             words.put(s, w);
             return w;
             
@@ -161,7 +180,7 @@ public class Lexer {
             String s = sb.toString();
             Word w = (Word)words.get(s);
             
-            if (w != null) return w; //palavra já existe na HashTable HashTable
+            if (w != null) return w; //palavra já existe no HashMap 
             
             w = new Word (s, Tag.ID);
             words.put(s, w);
@@ -169,8 +188,7 @@ public class Lexer {
         }
         
         //Caracteres não especificados
-        Token t = new Token(ch);
-        ch = ' ';
-        return t;
+        error();
+        return null;
     }
 }

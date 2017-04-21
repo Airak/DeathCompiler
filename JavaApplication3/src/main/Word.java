@@ -7,23 +7,40 @@ package main;
 
 /**
  *
- * @author Matheus
+ * @author Ana Claúdia, Bruno Marques e Matheus Martins
  */
 public class Word  extends Token{
     private String lexeme = "";
     
-    public static final Word and = new Word ("&&", Tag.AND);
-    public static final Word or = new Word ("||", Tag.OR);
-    public static final Word eq = new Word ("==", Tag.EQ);
-    public static final Word ne = new Word ("!=", Tag.NE);
-    public static final Word le = new Word ("<=", Tag.LE);
-    public static final Word ge = new Word (">=", Tag.GE);
+    //Tokens de operadores relacionais
+    public static final Word EQ = new Word ("=", Tag.EQ);
+    public static final Word NE = new Word ("<>", Tag.NE);
+    public static final Word LE = new Word ("<=", Tag.LE);
+    public static final Word GE = new Word (">=", Tag.GE);
+    public static final Word GR = new Word (">", Tag.GR);
+    public static final Word LS = new Word ("<", Tag.LS);
+    
+    //Tokens de operadores matemáticos
+    public static final Word SUM = new Word ("+", Tag.SUM);
+    public static final Word MIN = new Word ("-", Tag.MIN);
+    public static final Word MUL = new Word ("*", Tag.MUL);
+    public static final Word DIV = new Word ("/", Tag.DIV);
+    
+    //Token do operador de atribuição
+    public static final Word ATR = new Word(":=", Tag.ATR);
+    
+    //Token dos Símbolos de Pontuação
+    public static final Word V = new Word ("+", Tag.V);
+    public static final Word PV = new Word ("-", Tag.PV);
+    public static final Word AP = new Word ("*", Tag.AP);
+    public static final Word FP = new Word ("/", Tag.FP);
     
     public Word (String s, int tag){
         super (tag);
         lexeme = s;
     }
     
+    @Override
     public String toString(){
         return "" + lexeme;
     }
@@ -33,3 +50,4 @@ public class Word  extends Token{
     }
     
 }
+

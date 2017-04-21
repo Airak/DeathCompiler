@@ -6,23 +6,34 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
 /**
  *
- * @author Matheus
+ * @author Ana Claúdia, Bruno Marques e Matheus Martins
  */
 public class Main {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-    Scanner ler = new Scanner(System.in);
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        
+    //Scanner ler = new Scanner(System.in);
+    
+    String caminho = "D:\\Documentos\\Teste.txt";
+    
+    Lexer lex = new Lexer(caminho); 
+    String retorno;
+    do{
+        retorno = lex.scan().toString();
+        System.out.println(retorno);
+    }while(retorno!=null);
 
-    String caminho = "D:\\Downloads\\Teste.txt"; //= ler.nextLine();
+    /*String caminho = "D:\\Downloads\\Teste.txt"; //= ler.nextLine();
 
     System.out.printf("\nConteúdo do arquivo texto:\n");
     try {
@@ -45,9 +56,8 @@ public class Main {
     } catch (IOException e) {
         System.err.printf("Erro na abertura do arquivo: %s.\n",
         e.getMessage());
-    }
-
-    System.out.println();
+    }*/
+    
   }
     
     
