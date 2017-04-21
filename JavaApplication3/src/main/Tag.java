@@ -7,7 +7,7 @@ package main;
 
 /**
  *
- * @author Ana Claúdia, Bruno Marques e Matheus Martins
+ * @author Ana Cláudia, Bruno Marques e Matheus Martins
  */
 public class Tag {
     public final static int

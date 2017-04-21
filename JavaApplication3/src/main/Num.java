@@ -7,7 +7,7 @@ package main;
 
 /**
  *
- * @author Ana Claúdia, Bruno Marques e Matheus Martins
+ * @author Ana Cláudia, Bruno Marques e Matheus Martins
  */
 public class Num extends Token{
     public final int value;

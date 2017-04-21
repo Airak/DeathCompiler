@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  *
- * @author Ana Claúdia, Bruno Marques e Matheus Martins
+ * @author Ana Cláudia, Bruno Marques e Matheus Martins
  */
 
 public class Lexer {
