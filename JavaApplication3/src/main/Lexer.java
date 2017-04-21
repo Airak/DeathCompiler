@@ -164,7 +164,13 @@ public class Lexer {
                     value = 10*value + Character.digit(ch,10);
                     readch();
                 }while(Character.isDigit(ch));
-            }           
+            }else{
+                readch();
+                if (!(ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b' || ch == '\n')){
+                    error();
+                    return null;
+                }
+            }         
             return new Num(value);
         }
         
@@ -175,7 +181,7 @@ public class Lexer {
             do{
                 sb.append(ch);
                 readch();
-            }while(Character.isLetterOrDigit(ch) || Character.isDigit(ch) || ch == '_');
+            }while(Character.isLetterOrDigit(ch) || ch == '_');
             
             String s = sb.toString();
             Word w = (Word)words.get(s);

@@ -20,47 +20,22 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws FileNotFoundException, IOException {
-        
-    //Scanner ler = new Scanner(System.in);
+    public static void main(String[] args){
     
     String caminho = "D:\\Documentos\\Teste.txt";
     
-    Lexer lex = new Lexer(caminho); 
-    String retorno;
-    do{
-        retorno = lex.scan().toString();
-        System.out.println(retorno);
-    }while(retorno!=null);
-
-    /*String caminho = "D:\\Downloads\\Teste.txt"; //= ler.nextLine();
-
-    System.out.printf("\nConteúdo do arquivo texto:\n");
     try {
-        FileReader arq = new FileReader(caminho);
-        BufferedReader lerArq = new BufferedReader(arq);
+        Lexer lex = new Lexer(caminho);
+        String retorno;
         
-        char ch;
-        int r = lerArq.read(); 
+        do{
+            retorno = lex.scan().toString();
+            System.out.println(retorno);
+        }while(retorno!=null);
         
-        while (r != -1) {//Quando retornar -1 é por que chegou ao final do arquivo
-            
-            ch = (char) r;
-            System.out.printf("%c", ch); 
-
-            r = lerArq.read(); // lê o segundo caracter
-      }
-
-      arq.close();
-      
-    } catch (IOException e) {
-        System.err.printf("Erro na abertura do arquivo: %s.\n",
-        e.getMessage());
-    }*/
-    
+    } catch (Exception e) {
+        System.err.println("Erro na leitura do arquivo. " + e.getMessage());
+    }
   }
-    
-    
-  
     
 }
