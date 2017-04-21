@@ -86,32 +86,46 @@ public class Lexer {
         switch(ch){
             //Operadores relacionais
             case '=':
+                readch();
                 return Word.EQ;
             case '<':
                 if (readch('=')) return Word.LE;
                 else if (readch('>')) return Word.NE;
-                else return Word.LS;
+                else{
+                    readch();
+                    return Word.LS;
+                }
             case '>':
                 if (readch('=')) return Word.GE;
-                else return Word.GR;
+                else{
+                    readch();
+                    return Word.GR;
+                }
             //Operadores aritméticos
             case '+':
+                readch();
                 return Word.SUM;
             case '-':
+                readch();
                 return Word.MIN;
             case '*':
+                readch();
                 return Word.MUL;
             //Operador de atribuição
             case ':':
                 if (readch('=')) return Word.ATR;
             //Símbolos de pontuação
-            case ',':                
+            case ',':
+                readch();                
                 return Word.V;
             case ';':
+                readch();
                 return Word.PV;
             case '(':
+                readch();
                 return Word.AP;
             case ')':
+                readch();
                 return Word.FP;               
             //Comentários:
             case '/'://Uma linha
@@ -120,6 +134,7 @@ public class Lexer {
                         if (ch!='\n') continue;
                         else{
                             line++;
+                            readch();
                             break;
                         } 
                     } 
@@ -143,7 +158,16 @@ public class Lexer {
             do{
                 sb.append(ch);
                 readch();
-            }while( ( (int)ch>=0 && (int)ch<=255 ) && ch != '\n' && ch != '"');
+                if(ch=='"'){
+                    sb.append(ch);
+                    readch();
+                    break;
+                }
+                else if (ch == '\n'){
+                    error();
+                    return null;
+                }
+            }while((int)ch>=0 && (int)ch<=255);
             
             String s = sb.toString();
             Word w = (Word)words.get(s);
@@ -153,7 +177,6 @@ public class Lexer {
             w = new Word (s, Tag.LIT);
             words.put(s, w);
             return w;
-            
         }
         
         //Números

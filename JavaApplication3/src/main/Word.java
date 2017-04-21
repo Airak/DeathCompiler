@@ -30,10 +30,10 @@ public class Word  extends Token{
     public static final Word ATR = new Word(":=", Tag.ATR);
     
     //Token dos Símbolos de Pontuação
-    public static final Word V = new Word ("+", Tag.V);
-    public static final Word PV = new Word ("-", Tag.PV);
-    public static final Word AP = new Word ("*", Tag.AP);
-    public static final Word FP = new Word ("/", Tag.FP);
+    public static final Word V = new Word (",", Tag.V);
+    public static final Word PV = new Word (";", Tag.PV);
+    public static final Word AP = new Word ("(", Tag.AP);
+    public static final Word FP = new Word (")", Tag.FP);
     
     public Word (String s, int tag){
         super (tag);
