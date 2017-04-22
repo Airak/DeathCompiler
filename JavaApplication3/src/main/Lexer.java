@@ -37,22 +37,22 @@ public class Lexer {
             throw e;
         }
         //Insere palavras reservadas no HashMap
-            reserve(new Word ("if", Tag.IF));
-            reserve(new Word ("begin", Tag.BEGIN));
-            reserve(new Word ("end", Tag.END));
-            reserve(new Word ("init", Tag.INIT));
-            reserve(new Word ("stop", Tag.STOP));
-            reserve(new Word ("is", Tag.IS));
-            reserve(new Word ("integer", Tag.INTEGER));
-            reserve(new Word ("string", Tag.STRING));
-            reserve(new Word ("else", Tag.ELSE));
-            reserve(new Word ("do", Tag.DO));
-            reserve(new Word ("while", Tag.WHILE));
-            reserve(new Word ("read", Tag.READ));
-            reserve(new Word ("write", Tag.WRITE));
-            reserve(new Word ("not", Tag.NOT));
-            reserve(new Word ("or", Tag.OR));
-            reserve(new Word ("and", Tag.AND));
+            reserve(new Word ("if", Tag.IF, Token.RES));
+            reserve(new Word ("begin", Tag.BEGIN, Token.RES));
+            reserve(new Word ("end", Tag.END, Token.RES));
+            reserve(new Word ("init", Tag.INIT, Token.RES));
+            reserve(new Word ("stop", Tag.STOP, Token.RES));
+            reserve(new Word ("is", Tag.IS, Token.RES));
+            reserve(new Word ("integer", Tag.INTEGER, Token.RES));
+            reserve(new Word ("string", Tag.STRING, Token.RES));
+            reserve(new Word ("else", Tag.ELSE, Token.RES));
+            reserve(new Word ("do", Tag.DO, Token.RES));
+            reserve(new Word ("while", Tag.WHILE, Token.RES));
+            reserve(new Word ("read", Tag.READ, Token.RES));
+            reserve(new Word ("write", Tag.WRITE, Token.RES));
+            reserve(new Word ("not", Tag.NOT, Token.RES));
+            reserve(new Word ("or", Tag.OR, Token.RES));
+            reserve(new Word ("and", Tag.AND, Token.RES));
 
     }
 
@@ -64,7 +64,9 @@ public class Lexer {
     /* Lê o próximo caractere do arquivo e verifica se é igual a c*/
     private boolean readch(char c) throws IOException{
         readch();
-        if (ch != c) return false;
+        if (ch != c) {
+            return false;
+        }
         ch = ' ';
         return true;
     }
@@ -84,9 +86,12 @@ public class Lexer {
         //Desconsidera delimitadores e comentários na entrada
         for (;; readch()) {
             //Comentários
-            if(ch == '/'){//Uma linha
+            if(ch == '/'){ //Uma linha
                 if (readch('/')){
                     for (;; readch()) {
+                        if (Integer.valueOf(ch) == 65535) { //Fim de arquivo
+                            System.exit(0);
+                        }
                         if (ch=='\n') {
                             line++;
                             break;
@@ -96,8 +101,12 @@ public class Lexer {
                 else return Word.DIV;//Divisão
             }
             else if(ch=='{'){//Várias linhas
+                int linhaInicioComentario = line;
                 for (;; readch()) {
                     if (ch!='}'){
+                        if (Integer.valueOf(ch) == 65535) { //Fim de arquivo
+                            error("Comentário de bloco iniciado na linha "+linhaInicioComentario+" sem fim!");
+                        }
                         if(ch=='\n') line++;
                     }
                     else{
@@ -118,8 +127,10 @@ public class Lexer {
                 ch = ' ';
                 return Word.EQ;
             case '<':
-                if (readch('=')) return Word.LE;
-                else if (readch('>')) return Word.NE;
+                readch();
+                char chAux = ch;
+                if (chAux == '=') { ch = ' '; return Word.LE; }
+                else if (chAux == '>') { ch = ' '; return Word.NE; }
                 else return Word.LS;
             case '>':
                 if (readch('=')) return Word.GE;
@@ -136,7 +147,7 @@ public class Lexer {
                 return Word.MUL;
             //Operador de atribuição
             case ':':
-                if (readch('=')) return Word.ATR;
+                if (readch('=')) return Word.ATRIB;
                 break;
             //Símbolos de pontuação
             case ',':
@@ -177,7 +188,7 @@ public class Lexer {
             
             if (w != null) return w; //palavra já existe no HashMap
             
-            w = new Word (s, Tag.LIT);
+            w = new Word (s, Tag.LIT,Token.LIT);
             words.put(s, w);
             return w;
         }
@@ -214,13 +225,15 @@ public class Lexer {
             
             if (w != null) return w; //palavra já existe no HashMap 
             
-            w = new Word (s, Tag.ID);
+            w = new Word (s, Tag.ID, Token.ID);
             words.put(s, w);
             return w;
         }
                 
         //Caracteres não especificados
-        if (!(file.read()==-1)) { error();}
+        if (!(file.read()==-1)) { 
+            error();
+        }
         return null;
     }
 }

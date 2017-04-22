@@ -21,7 +21,7 @@ public class Main {
     //Scanner ler = new Scanner(System.in);
     
     try {
-        String caminho = "D:\\Documentos\\DeathCompiler\\JavaApplication3\\test\\Teste.txt";
+        String caminho = "/Users/bruno/Desktop/DeathCompiler/teste/teste1.txt";
         Lexer lex = new Lexer(caminho); 
         Token retorno = lex.scan();
         while (retorno != null){
