@@ -200,6 +200,10 @@ public class Lexer {
                 do{
                     value = 10*value + Character.digit(ch,10);
                     readch();
+                    if(Character.isLetter(ch)){
+                        error();
+                        return null;
+                    }
                 }while(Character.isDigit(ch));
             }else{
                 readch();
