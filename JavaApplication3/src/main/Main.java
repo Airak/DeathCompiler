@@ -17,12 +17,12 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+
     //Scanner ler = new Scanner(System.in);
-    
+
     try {
-        String caminho = "/Users/bruno/Desktop/DeathCompiler/teste/teste1.txt";
-        Lexer lex = new Lexer(caminho); 
+        String caminho = "seu caminho aqui";
+        Lexer lex = new Lexer(caminho);
         Token retorno = lex.scan();
         while (retorno != null){
             System.out.println(retorno.toString());
@@ -32,6 +32,6 @@ public class Main {
         System.err.println(e.getMessage());
     }
 
-  }    
-      
+  }
+
 }

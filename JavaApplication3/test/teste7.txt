@@ -1,0 +1,11 @@
+init
+
+x, y, z is integer;
+
+  read (x);
+  read (y);
+  z := x+y;
+  write(SOMA:);
+  write (z);
+
+end
