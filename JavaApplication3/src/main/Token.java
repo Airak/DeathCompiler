@@ -32,6 +32,10 @@ public class Token {
         return "<" + tipo + ">";
     }
     
+    public int getTag(){
+        return tag;
+    }    
+   
     public String getTipo() {
         return tipo;
     }

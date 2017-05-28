@@ -21,11 +21,11 @@ public class Main {
     //Scanner ler = new Scanner(System.in);
 
     try {
-        String caminho = "seu caminho aqui";
+        String caminho = "D:\\Documentos\\CEFET\\DeathCompiler\\JavaApplication3\\test\\Teste.txt";
         Lexer lex = new Lexer(caminho);
         Token retorno = lex.scan();
         while (retorno != null){
-            System.out.println(retorno.toString());
+            System.out.println(retorno.toString() + " " + retorno.getTag());
             retorno = lex.scan();
         }
     } catch (IOException e) {

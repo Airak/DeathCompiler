@@ -56,7 +56,7 @@ public class Lexer {
 
     }
 
-        /*Lê o próximo caractere do arquivo*/
+    /*Lê o próximo caractere do arquivo*/
     private void readch() throws IOException{
         ch = Character.toLowerCase((char) file.read()); // A Linguagem não é case-sensitive!
     }
