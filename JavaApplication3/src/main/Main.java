@@ -21,13 +21,15 @@ public class Main {
     //Scanner ler = new Scanner(System.in);
 
     try {
-        String caminho = "D:\\Documentos\\CEFET\\DeathCompiler\\JavaApplication3\\test\\Teste.txt";
+        String caminho = "C:\\Users\\Ana Cláudia\\Documents\\CEFET\\Compiladores\\DeathCompiler\\DeathCompiler\\JavaApplication3\\test\\teste7.txt";
         Lexer lex = new Lexer(caminho);
-        Token retorno = lex.scan();
-        while (retorno != null){
+        //Token retorno = lex.scan();
+        /*while (retorno != null){
             System.out.println(retorno.toString() + " " + retorno.getTag());
             retorno = lex.scan();
-        }
+        }*/
+        Syntactic syn = new Syntactic(lex);
+        syn.program();
     } catch (IOException e) {
         System.err.println(e.getMessage());
     }

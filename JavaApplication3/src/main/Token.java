@@ -40,4 +40,3 @@ public class Token {
         return tipo;
     }
 }
-
