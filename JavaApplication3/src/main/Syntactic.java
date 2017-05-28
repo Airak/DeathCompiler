@@ -70,23 +70,45 @@ public class Syntactic {
         else error();
     }
     
-    void program (){//tratar o opcional decl_list após o init        
+    //opcional
+    void program (){      
         switch(tok){// init [decl-list] stmt-list stop
-            case INIT: eat(INIT); stmt_list(); eat(STOP); break;                   
+            case INIT: eat(INIT); /*advance(); if(tok==ID) decl_list();*/ stmt_list(); eat(STOP); break;                   
             default: error(); break;
         }   
     }
     
-    void decl_list(){
-        
+    void decl_list(){        
+        switch(tok){//decl ";" { decl ";"}
+            case ID: decl();
+                    eat(PV); 
+                    advance(); 
+                    while(tok==ID){
+                        decl();
+                        eat(PV);
+                        advance();
+                    }break;
+            default: error();
+        }
     }
     
-    void dec(){
-        
+    void decl(){
+        switch(tok){//ident-list is type
+            case ID: ident_list(); eat(IS); type();break;
+            default: error();
+        }
     }
     
     void ident_list(){
-        
+        switch(tok){//identifier {"," identifier}
+            case ID: identifier();
+                    advance();
+                    while(tok==V){
+                        eat(V);
+                        identifier();
+                    }break;
+            default: error();
+        }
     }
     
     void type(){
@@ -94,7 +116,9 @@ public class Syntactic {
     }
     
     void stmt_list(){
-        
+        switch(tok){//stmt ";" { stmt ";"}
+            //letter,if,do,read,write
+        }
     }
     
     void stmt(){
@@ -169,7 +193,7 @@ public class Syntactic {
         switch(tok){//+ | - | or
             case SUM: eat(SUM); break;//+
             case MIN: eat(MIN); break;// -
-            case OR: eat(OR); break;
+            case OR: eat(OR); break;//or
             default: error();
         }
     }
@@ -230,7 +254,7 @@ public class Syntactic {
     void term_prime(){        
         switch(tok){//mulop factor-a term' 
             case MUL://*
-            case DIV:// /
+            case DIV:///
             case AND: mulop(); factor_a(); term_prime(); break;//and
             default: error();
         }          
