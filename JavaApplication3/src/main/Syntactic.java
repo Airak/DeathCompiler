@@ -44,14 +44,6 @@ public class Syntactic {
         else error();
     }
     
-//    public void run() throws IOException{
-//		program();
-//		if (correct == true)
-//			System.out.println("\nAnálise feita com sucesso.");	
-//
-//	}
-    
-    //opcional
     void program() throws IOException{
         //eat(Tag.INIT);
         switch(tok.getTag()){// init [decl-list] stmt-list stop
