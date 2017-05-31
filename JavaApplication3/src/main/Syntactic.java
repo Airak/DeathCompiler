@@ -13,9 +13,7 @@ import java.io.IOException;
  */
 public class Syntactic {
     
-    Lexer lexer;        
-    //int tok = getToken();
-    
+    Lexer lexer;            
     Token tok = null;
     boolean correct = true;
     
@@ -24,85 +22,95 @@ public class Syntactic {
         this.tok = lexer.scan(); //faz a leitura dos tokens
     }
     
-    private void error() {
+    private void error() throws IOException {
         this.correct = false;
-        System.err.println("\nErro na linha "+ Lexer.line +": Token não reconhecido");
-        System.exit(0);
+        if (this.tok.getTag() == 0){
+            System.out.println("\nErro na linha " + lexer.line + ": Final de arquivo inesperado");
+            System.exit(0);
+        }
+        else {
+            System.err.println("\nErro na linha "+ Lexer.line +": Token " + tok.toString() + " não esperado.");
+        }
+        this.advance();
+        
     }
 
-    void advance(){
-        try {
-            tok = this.lexer.scan();
-        }
-        catch (IOException e){
-            error();
-        }
-        //tok = getToken();
+    void advance() throws IOException{
+            tok = lexer.scan();
     }
     
-    void eat(int t){
-        if(tok.getTag() ==t)advance();
+    void eat(int t) throws IOException{
+        if(tok.getTag() ==t) advance();
         else error();
     }
     
-    public void run() throws IOException{
-		program();
-		if (correct == true)
-			System.out.println("\nAnálise feita com sucesso.");	
-
-	}
+//    public void run() throws IOException{
+//		program();
+//		if (correct == true)
+//			System.out.println("\nAnálise feita com sucesso.");	
+//
+//	}
     
     //opcional
-    void program (){      
+    void program() throws IOException{
+        //eat(Tag.INIT);
         switch(tok.getTag()){// init [decl-list] stmt-list stop
-            case Tag.INIT: eat(Tag.INIT); /*advance(); if(tok==Tag.ID) decl_list();*/ stmt_list(); eat(Tag.STOP); break;                   
+            case Tag.INIT: eat(Tag.INIT); /*advance(); if(tok==Tag.ID)*/ decl_list(); stmt_list(); eat(Tag.STOP); break;                   
             default: error(); break;
+            //default: decl_list(); stmt_list(); eat(Tag.STOP); break;
         }   
     }
     
-    void decl_list(){        
+    void decl_list() throws IOException{
         switch(tok.getTag()){//decl ";" { decl ";"}
-            case Tag.ID: decl();
+            case Tag.ID: 
+                    decl();
                     eat(Tag.PV); 
                     advance(); 
                     while(tok.getTag()==Tag.ID){
                         decl();
                         eat(Tag.PV);
                         advance();
-                    }break;
+                    }
+             break;
             default: error();
+            
+            //default: decl(); eat(Tag.PV); decl_list();
+    
         }
     }
     
-    void decl(){
+    void decl() throws IOException{
         switch(tok.getTag()){//ident-list is type
             case Tag.ID: ident_list(); eat(Tag.IS); type();break;
             default: error();
         }
     }
     
-    void ident_list(){
+    void ident_list() throws IOException{
         switch(tok.getTag()){//identifier {"," identifier}
             case Tag.ID: identifier();
-                    advance();
+                    System.out.println("CHEGUEI AQUI \n"); 
+                    advance(); 
                     while(tok.getTag()==Tag.V){
                         eat(Tag.V);
                         identifier();
                         advance();
-                    }break;
+                    }
+                    break;
             default: error();
         }
     }
     
-    void type(){
+    void type() throws IOException{
         switch(tok.getTag()){//type ::= integer | string
-            case Tag.NUM: eat(Tag.NUM); break;
-            case Tag.LIT: eat(Tag.LIT); break;
+            case Tag.INTEGER: eat(Tag.INTEGER); break;
+            case Tag.STRING: eat(Tag.STRING); break;
             default: error();
         }        
     }
     
-    void stmt_list(){
+    void stmt_list() throws IOException{
         switch(tok.getTag()){//stmt ";" { stmt ";"}
             case Tag.ID:
             case Tag.IF:
@@ -119,25 +127,25 @@ public class Syntactic {
         }
     }
     
-    void stmt(){//letter,if,do,read,write       
+    void stmt() throws IOException{//letter,if,do,read,write
         switch(tok.getTag()){//assign-stmt |  if-stmt |  do-stmt |  read-stmt | write-stmt
             case Tag.ID: assign_stmt(); break;
             case Tag.IF: if_stmt(); break;
-            case Tag.DO: eat(Tag.DO); do_stmt(); break;
-            case Tag.READ: eat(Tag.READ); read_stmt(); break;
-            case Tag.WRITE: eat(Tag.WRITE); write_stmt(); break;
+            case Tag.DO: do_stmt(); break;
+            case Tag.READ: read_stmt(); break;
+            case Tag.WRITE: write_stmt(); break;
             default: error();
         }
     }
     
-    void assign_stmt(){
+    void assign_stmt() throws IOException{
         switch(tok.getTag()){// identifier ":=" simple_expr
             case Tag.ID: identifier(); eat(Tag.ATR); simple_expr();
             default: error();
         }
     }
     
-    void if_stmt(){
+    void if_stmt() throws IOException{
         switch(tok.getTag()){//if "(" condition  ")" begin stmt-list end if-stmt’
             case Tag.IF: eat(Tag.IF); eat(Tag.AP); condition(); eat(Tag.FP); 
                 eat(Tag.BEGIN); stmt_list(); eat(Tag.END); if_stmt_prime(); break;
@@ -145,7 +153,7 @@ public class Syntactic {
         }
     }
     
-    void condition(){
+    void condition() throws IOException{
         switch(tok.getTag()){//expression
             case Tag.ID: 
             case Tag.NUM:
@@ -157,35 +165,35 @@ public class Syntactic {
         }
     }
     
-    void do_stmt(){
+    void do_stmt() throws IOException{
        switch(tok.getTag()){//do stmt-list do-suffix
            case Tag.DO: eat(Tag.DO); stmt_list(); do_suffix(); break;
            default: error();
        } 
     }
     
-    void do_suffix(){
+    void do_suffix() throws IOException{
         switch(tok.getTag()){//while "(" condition ")"
             case Tag.WHILE: eat(Tag.WHILE); eat(Tag.AP); condition(); eat(Tag.FP); break;
             default: error();
         }        
     }
     
-    void read_stmt(){
+    void read_stmt() throws IOException{
         switch(tok.getTag()){//read "(" identifier ")"
             case Tag.READ: eat(Tag.READ); eat(Tag.AP); identifier(); eat(Tag.FP); break;
             default: error();
         }
     }
     
-    void write_stmt(){
+    void write_stmt() throws IOException{
         switch(tok.getTag()){//write "(" writable ")"
             case Tag.WRITE: eat(Tag.WRITE); eat(Tag.AP); writeable(); eat(Tag.FP); break;
             default: error();
         }
     }
     
-    void writeable(){
+    void writeable() throws IOException{
         switch(tok.getTag()){//simple-expr 
             case Tag.ID: 
             case Tag.NUM:
@@ -197,7 +205,7 @@ public class Syntactic {
         }
     }
     
-    void expression(){
+    void expression() throws IOException{
         switch(tok.getTag()){//simple-expr expression'
             case Tag.ID: 
             case Tag.NUM:
@@ -209,7 +217,7 @@ public class Syntactic {
         }
     }
     
-    void simple_expr(){
+    void simple_expr() throws IOException{
         switch(tok.getTag()){//= term simple-expr'
             case Tag.ID: 
             case Tag.NUM:
@@ -221,7 +229,7 @@ public class Syntactic {
         }
     }
     
-    void term(){
+    void term() throws IOException{
         switch(tok.getTag()){// factor-a term'
             case Tag.ID: 
             case Tag.NUM:
@@ -233,7 +241,7 @@ public class Syntactic {
         }
     }
     
-    void factor_a(){
+    void factor_a() throws IOException{
         switch(tok.getTag()){//factor | not factor | "-" factor
             case Tag.ID: 
             case Tag.NUM:
@@ -245,7 +253,7 @@ public class Syntactic {
         }
     }
     
-    void factor(){
+    void factor() throws IOException{
         switch(tok.getTag()){//identifier | constant |  "(" expression ")"
             case Tag.ID: identifier(); break;
             case Tag.NUM:
@@ -255,7 +263,7 @@ public class Syntactic {
         }        
     }
     
-    void relop(){
+    void relop() throws IOException{
         switch(tok.getTag()){//"=" |  ">" |   ">=" |   "<" |   "<=" |  "<>"
             case Tag.EQ: eat(Tag.EQ); break;//=
             case Tag.GE: eat(Tag.GE); break;//>=
@@ -267,7 +275,7 @@ public class Syntactic {
         }        
     }
     
-    void addop(){
+    void addop() throws IOException{
         switch(tok.getTag()){//+ | - | or
             case Tag.SUM: eat(Tag.SUM); break;//+
             case Tag.MIN: eat(Tag.MIN); break;// -
@@ -276,7 +284,7 @@ public class Syntactic {
         }
     }
     
-    void mulop(){
+    void mulop() throws IOException{
         switch(tok.getTag()){// "*" | "/" | and
             case Tag.MUL: eat(Tag.MUL); break;//*
             case Tag.DIV: eat(Tag.DIV); break;// /
@@ -285,7 +293,7 @@ public class Syntactic {
         }        
     }
     
-    void constant(){
+    void constant() throws IOException{
         switch(tok.getTag()){//integer_const |  literal
             case Tag.NUM: integer_const(); break;
             case Tag.LIT: literal(); break;
@@ -293,35 +301,35 @@ public class Syntactic {
         }
     }
     
-    void integer_const(){
+    void integer_const() throws IOException{
         switch(tok.getTag()){//nozero {digit} | "0"
             case Tag.NUM: eat(Tag.NUM);break;
             default: error();
         }
     }
     
-    void literal(){
+    void literal() throws IOException{
         switch(tok.getTag()){//" " " {caractere} " " "
             case Tag.LIT: eat(Tag.LIT);break;
             default: error();
         }
     }
     
-    void identifier(){
+    void identifier() throws IOException{
         switch(tok.getTag()){// (letter) {letter | digit | " _ " }
-            case Tag.ID: eat(Tag.IF);break;
+            case Tag.ID: eat(Tag.ID);break;
             default: error();
         }
     }
     
-    void if_stmt_prime(){
+    void if_stmt_prime() throws IOException{
         switch(tok.getTag()){//else begin stmt-list end |  λ
             case Tag.ELSE: eat(Tag.ELSE); eat(Tag.BEGIN); stmt_list(); eat(Tag.END);
             default: break;// λ              
         }        
     }
     
-    void expression_prime(){        
+    void expression_prime() throws IOException{  
         switch(tok.getTag()){//relop simple-expr |  λ
             case Tag.EQ: 
             case Tag.GE: 
@@ -333,7 +341,7 @@ public class Syntactic {
         }
     }
     
-    void simple_expr_prime(){        
+    void simple_expr_prime() throws IOException{ 
         switch(tok.getTag()){//addop term simple-expr'
             case Tag.SUM:  
             case Tag.MIN: 
@@ -342,7 +350,7 @@ public class Syntactic {
         }
     }
     
-    void term_prime(){        
+    void term_prime() throws IOException{        
         switch(tok.getTag()){//mulop factor-a term' 
             case Tag.MUL://*
             case Tag.DIV:///
