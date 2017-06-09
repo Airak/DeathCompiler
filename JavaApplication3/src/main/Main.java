@@ -18,23 +18,22 @@ public class Main {
      */
     public static void main(String[] args) {
 
-    //Scanner ler = new Scanner(System.in);
+        String caminho;
 
-    try {
-        String caminho = "D:\\Documentos\\DeathCompiler\\JavaApplication3\\test\\teste6.txt";
-        Lexer lex = new Lexer(caminho);
-        //Token retorno = lex.scan();
-        /*while (retorno != null){
-            System.out.println(retorno.toString() + " " + retorno.getTag());
-            retorno = lex.scan();
-        }*/
-        Syntactic syn = new Syntactic(lex);
-        syn.program();
-        System.out.println("Compilação concluída com sucesso!");
-    } catch (IOException e) {
-        System.err.println(e.getMessage());
+        if (args.length >= 1) {
+            caminho = args[0];
+        } else {
+            caminho = "entrada.txt";
+        }
+        try {
+            Lexer lex = new Lexer(caminho);
+            Syntactic syn = new Syntactic(lex);
+            syn.program();
+            System.out.println("Compilação concluída com sucesso!");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
-
-  }
 
 }
