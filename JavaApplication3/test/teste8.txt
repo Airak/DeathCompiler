@@ -3,4 +3,4 @@ a, b, c is integer;
   read (a);
   b := a+0;
   write(b);
-end
+stop

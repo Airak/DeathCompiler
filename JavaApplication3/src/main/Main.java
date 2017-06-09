@@ -21,7 +21,7 @@ public class Main {
     //Scanner ler = new Scanner(System.in);
 
     try {
-        String caminho = "C:\\Users\\Ana Cláudia\\Documents\\CEFET\\Compiladores\\DeathCompiler\\DeathCompiler\\JavaApplication3\\test\\teste7.txt";
+        String caminho = "D:\\Documentos\\DeathCompiler\\JavaApplication3\\test\\teste6.txt";
         Lexer lex = new Lexer(caminho);
         //Token retorno = lex.scan();
         /*while (retorno != null){
@@ -30,6 +30,7 @@ public class Main {
         }*/
         Syntactic syn = new Syntactic(lex);
         syn.program();
+        System.out.println("Compilação concluída com sucesso!");
     } catch (IOException e) {
         System.err.println(e.getMessage());
     }

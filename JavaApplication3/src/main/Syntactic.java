@@ -23,52 +23,112 @@ public class Syntactic {
     }
     
     private void error() throws IOException {
-        this.correct = false;
-        if (this.tok.getTag() == 0){
+        if (this.tok == null) {
             System.out.println("\nErro na linha " + lexer.line + ": Final de arquivo inesperado");
-            System.exit(0);
-        }
-        else {
+        } else if (this.tok.getTag() == 0){
+            System.out.println("\nErro na linha " + lexer.line + ": Final de arquivo inesperado");
+        } else { 
             System.err.println("\nErro na linha "+ Lexer.line +": Token " + tok.toString() + " não esperado.");
-        }
-        this.advance();
-        
+        } System.exit(0);  
     }
 
     void advance() throws IOException{
-            tok = lexer.scan();
+            tok = lexer.scan(); 
+            if (this.tok == null) {  error(); }
+            if (this.tok.getTag() == 0) { System.out.println("Compilação concluída com sucesso!"); System.exit(1); } 
+            
     }
     
     void eat(int t) throws IOException{
-        if(tok.getTag() ==t) advance();
-        else error();
+        if(tok.getTag() == t) {  if (tok.getTag()!=Tag.STOP) advance(); }
+        else { error(); }
     }
     
     void program() throws IOException{
-        //eat(Tag.INIT);
         switch(tok.getTag()){// init [decl-list] stmt-list stop
-            case Tag.INIT: eat(Tag.INIT); /*advance(); if(tok==Tag.ID)*/ decl_list(); stmt_list(); eat(Tag.STOP); break;                   
+            case Tag.INIT: 
+                eat(Tag.INIT);
+                //if,do,read,write -> stmt-list
+                switch(tok.getTag()) {
+                    case Tag.IF: 
+                    case Tag.DO: 
+                    case Tag.READ: 
+                    case Tag.WRITE: 
+                        stmt_list();
+                        break;
+                    case Tag.ID: //stmt-list ou decl-list
+                        eat(Tag.ID);
+                        switch(tok.getTag()) {
+                            case Tag.ATR: //stmt-list
+                                eat(Tag.ATR);
+                                simple_expr();
+                                eat(Tag.PV);
+                                while(tok.getTag()==Tag.ID || this.tok.getTag()==Tag.IF || this.tok.getTag()==Tag.DO || this.tok.getTag()==Tag.READ || this.tok.getTag()==Tag.WRITE){
+                                    stmt();
+                                    eat(Tag.PV);
+                                }break;
+                            case Tag.IS: //decl-list
+                                eat(Tag.IS);
+                                type();
+                                eat(Tag.PV); 
+                                while(tok.getTag()==Tag.ID){
+                                    identifier(); 
+                                    if (tok.getTag() == Tag.ATR){
+                                        eat(Tag.ATR);
+                                        simple_expr();
+                                        eat(Tag.PV);
+                                        while(tok.getTag()==Tag.ID || this.tok.getTag()==Tag.IF || this.tok.getTag()==Tag.DO || this.tok.getTag()==Tag.READ || this.tok.getTag()==Tag.WRITE){
+                                            stmt();
+                                            eat(Tag.PV);
+                                        }
+                                    } else {
+                                        while(tok.getTag()==Tag.V){
+                                            eat(Tag.V);
+                                            identifier();
+                                        }
+                                        eat(Tag.IS); 
+                                        type();
+                                        eat(Tag.PV);
+                                    }
+                                }
+                                stmt_list();
+                                break;
+                            case Tag.V: //decl-list 
+                                while(tok.getTag()==Tag.V){
+                                    eat(Tag.V);
+                                    identifier();
+                                }
+                                eat(Tag.IS);  
+                                type();
+                                eat(Tag.PV);  
+                                while(tok.getTag()==Tag.ID){
+                                    decl();
+                                    eat(Tag.PV);
+                                }
+                                stmt_list();
+                                break;
+                            default: error(); break;
+                        }   
+                        break;
+                    default: error(); break;
+                }
+                eat(Tag.STOP); break;                  
             default: error(); break;
-            //default: decl_list(); stmt_list(); eat(Tag.STOP); break;
         }   
     }
+    
     
     void decl_list() throws IOException{
         switch(tok.getTag()){//decl ";" { decl ";"}
             case Tag.ID: 
                     decl();
                     eat(Tag.PV); 
-                    advance(); 
                     while(tok.getTag()==Tag.ID){
                         decl();
                         eat(Tag.PV);
-                        advance();
                     }
              break;
             default: error();
-            
-            //default: decl(); eat(Tag.PV); decl_list();
-    
         }
     }
     
@@ -82,12 +142,9 @@ public class Syntactic {
     void ident_list() throws IOException{
         switch(tok.getTag()){//identifier {"," identifier}
             case Tag.ID: identifier();
-                    System.out.println("CHEGUEI AQUI \n"); 
-                    advance(); 
                     while(tok.getTag()==Tag.V){
                         eat(Tag.V);
                         identifier();
-                        advance();
                     }
                     break;
             default: error();
@@ -110,18 +167,16 @@ public class Syntactic {
             case Tag.READ:
             case Tag.WRITE:stmt();
                 eat(Tag.PV);
-                advance();
                 while(tok.getTag()==Tag.ID || this.tok.getTag()==Tag.IF || this.tok.getTag()==Tag.DO || this.tok.getTag()==Tag.READ || this.tok.getTag()==Tag.WRITE){
                     stmt();
                     eat(Tag.PV);
-                    advance();
                 }break;
         }
     }
     
     void stmt() throws IOException{//letter,if,do,read,write
         switch(tok.getTag()){//assign-stmt |  if-stmt |  do-stmt |  read-stmt | write-stmt
-            case Tag.ID: assign_stmt(); break;
+            case Tag.ID: assign_stmt();  break;
             case Tag.IF: if_stmt(); break;
             case Tag.DO: do_stmt(); break;
             case Tag.READ: read_stmt(); break;
@@ -132,7 +187,7 @@ public class Syntactic {
     
     void assign_stmt() throws IOException{
         switch(tok.getTag()){// identifier ":=" simple_expr
-            case Tag.ID: identifier(); eat(Tag.ATR); simple_expr();
+            case Tag.ID: identifier(); eat(Tag.ATR); simple_expr(); break; 
             default: error();
         }
     }
@@ -192,7 +247,7 @@ public class Syntactic {
             case Tag.LIT: 
             case Tag.AP: 
             case Tag.NOT:
-            case Tag.MIN: simple_expr(); break;
+            case Tag.MIN: simple_expr();  break;
             default: error();            
         }
     }
@@ -216,8 +271,8 @@ public class Syntactic {
             case Tag.LIT: 
             case Tag.AP: 
             case Tag.NOT:
-            case Tag.MIN: term(); simple_expr_prime(); break;
-            default: error(); 
+            case Tag.MIN: term(); simple_expr_prime();  break;
+            default:  error(); 
         }
     }
     
@@ -337,8 +392,8 @@ public class Syntactic {
         switch(tok.getTag()){//addop term simple-expr'
             case Tag.SUM:  
             case Tag.MIN: 
-            case Tag.OR: addop(); term(); simple_expr_prime(); break;//or
-            default: error();
+            case Tag.OR: addop(); term(); simple_expr_prime();   break;//or
+            default: break;
         }
     }
     
@@ -347,7 +402,7 @@ public class Syntactic {
             case Tag.MUL://*
             case Tag.DIV:///
             case Tag.AND: mulop(); factor_a(); term_prime(); break;//and
-            default: error();
+            default: break;
         }          
     }
 }
